@@ -24,7 +24,7 @@ if __name__ == '__main__':
     # device = 'cuda' if torch.cuda.is_available() else 'cpu'
     device = 'mps' if torch.backends.mps.is_built() else 'cpu'
     if args.modeltype == 'UNet':
-        model = UNet(pretrained=True, out_channels=args.n_class).to(device)
+        model = UNet(pretrained=True, out_channels=args.n_class, backbone = 'resnet34').to(device)
     criterion = UnetLoss
     optimizer = optim.Adam(model.parameters(), lr=args.lr)
     n_epochs = args.epoch
