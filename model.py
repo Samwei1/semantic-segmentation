@@ -136,7 +136,6 @@ class UNet(nn.Module):
         up2 = self.up_conv3(up3) #  28 28 128
         up2 = torch.cat([up2, out_2], dim=1) # 28 28 256
         up2 = self.back_conv2(up2) # 28 28 128
-        print(up2.shape)
 
         up1 = self.up_conv2(up2) # 56 56 64
         up1 = torch.cat([up1, out_1], dim=1) # 56 56 128

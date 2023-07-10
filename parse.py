@@ -21,4 +21,6 @@ def parse_args():
                         help='Batch size.')
     parser.add_argument('--verbose', type=int, default=1,
                         help='Interval of evaluation.')
+    parser.add_argument('--backbone', type=str, default='resnet34',
+                        help='feature extractor backbone')
     return parser.parse_args()

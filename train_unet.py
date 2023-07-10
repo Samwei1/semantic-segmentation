@@ -10,8 +10,11 @@ from parse import parse_args
 
 if __name__ == '__main__':
     args = parse_args()
-    trn_ds = SegData('train', args.dataset)
-    val_ds = SegData('test', args.dataset)
+    # device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    device = 'mps' if torch.backends.mps.is_built() else 'cpu'
+    device = 'cpu'
+    trn_ds = SegData('train', args.dataset, device)
+    val_ds = SegData('test', args.dataset, device)
     trn_dl = DataLoader(trn_ds, batch_size=args.batch_size, shuffle=True, collate_fn=trn_ds.collate_fn)
     val_dl = DataLoader(val_ds, batch_size=args.batch_size, shuffle=True, collate_fn=val_ds.collate_fn)
 
@@ -21,10 +24,8 @@ if __name__ == '__main__':
 
     ensureDir(base_path)
 
-    # device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    device = 'mps' if torch.backends.mps.is_built() else 'cpu'
     if args.modeltype == 'UNet':
-        model = UNet(pretrained=True, out_channels=args.n_class, backbone = 'resnet34').to(device)
+        model = UNet(pretrained=True, out_channels=args.n_class, backbone = args.backbone).to(device)
     criterion = UnetLoss
     optimizer = optim.Adam(model.parameters(), lr=args.lr)
     n_epochs = args.epoch
