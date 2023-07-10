@@ -49,13 +49,26 @@ if __name__ == '__main__':
         with open(base_path + 'stats_{}.txt'.format(args.saveID), 'a') as f:
             f.write(perf_str + "\n")
 
-        N = len(val_dl)
-        for bx, data in enumerate(val_dl):
-            loss, acc = validate_batch(model, data, criterion)
-            log.record(ex + (bx + 1) / N, val_loss=loss, val_acc=acc, end='\r')
-            if acc > best:
-                checkpoint_buffer = save_checkpoint(model, ex, base_path, checkpoint_buffer, args.max2keep)
-                best = acc
+        # evaluate the model
+        if (ex + 1) % args.verbose == 0:
+            N = len(val_dl)
+            running_loss, num_batches, running_acc = 0, 0, 0
+            for bx, data in enumerate(val_dl):
+                loss, acc = validate_batch(model, data, criterion)
+                running_loss += loss
+                running_acc += acc
+
+                log.record(ex + (bx + 1) / N, val_loss=loss, val_acc=acc, end='\r')
+                if acc > best:
+                    checkpoint_buffer = save_checkpoint(model, ex, base_path, checkpoint_buffer, args.max2keep)
+                    best = acc
+                num_batches += 1
+
+            perf_str = 'Valid set Epoch %d: train==[%.5f %.5f]' % (
+                ex, running_loss / num_batches,
+                running_acc / num_batches)
+            with open(base_path + 'stats_{}.txt'.format(args.saveID), 'a') as f:
+                f.write(perf_str + "\n")
 
     print("train_acc:", np.mean([v for pos, v in log.trn_acc]), "|val_acc:", np.mean([v for pos, v in log.val_acc]))
 

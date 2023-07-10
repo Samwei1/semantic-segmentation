@@ -19,4 +19,6 @@ def parse_args():
                         help='max checkpoints to keep')
     parser.add_argument('--batch_size', type=int, default=20,
                         help='Batch size.')
+    parser.add_argument('--verbose', type=int, default=1,
+                        help='Interval of evaluation.')
     return parser.parse_args()
