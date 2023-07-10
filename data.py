@@ -9,17 +9,18 @@ tfms = transforms.Compose([
 
 
 class SegData(Dataset):
-    def __init__(self, split):
-        self.items = stems(f'dataset1/images_prepped_{split}')
+    def __init__(self, split, dataset):
+        self.items = stems(f'{dataset}/images_prepped_{split}')
         self.split = split
+        self.dataset = dataset
 
     def __len__(self):
         return len(self.items)
 
     def __getitem__(self, ix):
-        image = read(f'dataset1/images_prepped_{self.split}/{self.items[ix]}.png', 1)
+        image = read(f'{self.dataset}/images_prepped_{self.split}/{self.items[ix]}.png', 1)
         image = cv2.resize(image, (224, 224))
-        mask = read(f'dataset1/annotations_prepped_{self.split}/{self.items[ix]}.png')
+        mask = read(f'{self.dataset}/annotations_prepped_{self.split}/{self.items[ix]}.png')
         mask = cv2.resize(mask, (224, 224))
         return image, mask
 
