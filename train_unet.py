@@ -21,8 +21,10 @@ if __name__ == '__main__':
     saveID = args.saveID
     checkpoint_buffer = []
     base_path = './weights/{}/{}/{}'.format(args.dataset, args.modeltype, saveID)
+    image_path = './image/{}/{}/{}'.format(args.dataset, args.modeltype, saveID)
 
     ensureDir(base_path)
+    ensureDir(image_path)
 
     if args.modeltype == 'UNet':
         model = UNet(pretrained=True, out_channels=args.n_class, backbone = args.backbone).to(device)
@@ -73,11 +75,11 @@ if __name__ == '__main__':
 
     print("train_acc:", np.mean([v for pos, v in log.trn_acc]), "|val_acc:", np.mean([v for pos, v in log.val_acc]))
 
-    log.plot_epochs(['trn_loss', 'val_loss'])
+    log.plot_epochs(['trn_loss', 'val_loss'], path=image_path+'train_plot.png')
 
     ims, masks = next(iter(val_dl))
     output = model(ims)
     _, _masks = torch.max(output, 1)
-    plt.imshow(ims[0].permute(1, 2, 0).detach().cpu()[:, :, 0], title="Original Image")
-    plt.imshow(masks.permute(1, 2, 0).detach().cpu()[:, :, 0], title="Original Mask")
-    plt.imshow(_masks.permute(1, 2, 0).detach().cpu()[:, :, 0], title="Predicated Mask")
+    plt.imsave(image_path+'Original_Image.png', ims[0].permute(1, 2, 0).detach().cpu()[:, :, 0])
+    plt.imsave(image_path+'Original_Mask.png', masks.permute(1, 2, 0).detach().cpu()[:, :, 0])
+    plt.imsave(image_path+'Predicated_Mask.png', _masks.permute(1, 2, 0).detach().cpu()[:, :, 0])

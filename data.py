@@ -1,6 +1,7 @@
 from torch_snippets import *
 import torch
-
+from PIL import Image
+import numpy as np
 tfms = transforms.Compose([
     transforms.ToTensor(),
     transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])  # imagenet
@@ -20,7 +21,8 @@ class SegData(Dataset):
     def __getitem__(self, ix):
         image = read(f'{self.dataset}/images_prepped_{self.split}/{self.items[ix]}.png', 1)
         image = cv2.resize(image, (224, 224))
-        mask = read(f'{self.dataset}/annotations_prepped_{self.split}/{self.items[ix]}.png')
+        mask = Image.open(f'{self.dataset}/annotations_prepped_{self.split}/{self.items[ix]}.png')
+        mask = np.asarray(mask, dtype=np.uint8)
         mask = cv2.resize(mask, (224, 224))
         return image, mask
 
